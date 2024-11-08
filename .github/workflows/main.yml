@@ -9,11 +9,6 @@ jobs:
       - name: Clone down repository
         uses: actions/checkout@v4
 
-      - name: Set up SonarCloud
-        run: |
-          export SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}"
-          export SONAR_PROJECT_KEY="${{ secrets.SONAR_PROJECT_KEY }}"
-        
       - name: Build application
         run: ci/build-app.sh
 
@@ -21,13 +16,11 @@ jobs:
         run: ci/unit-test-app.sh
 
       - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          organization: "m17k0"
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          ./gradlew sonarqube \
-          -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=$SONAR_TOKEN
 
       - name: Upload repo
         uses: actions/upload-artifact@v4
